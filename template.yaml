@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: IAM User, Role, and Policy for check_mk. Access Key and Secret will be stored in Param Store
+
+Parameters:
+  userName:
+    Type: String
+    Description: The username for the IAM user for check_mk.  The region will be appended to it.
+    Default: check_mk-User
+  iamRole:
+    Type: String
+    Description: The IAM ROLE name for Check_Mk. he region will be appended to it.
+    Default: check_mk-Role
+
+Resources:
+  
