@@ -33,8 +33,9 @@ Resources:
       DataType: text
       Description: !Sub Access Key for ${CheckMkUser}
       Name: !Sub ${CheckMkUser}-access-key
-      # Tags:
-      #   - created-by: Jeff Pabian
+      Tags:
+        created-by: Jeff Pabian
+        StackName: !Sub ${AWS::StackName}
       Tier: Standard
       Type: String
       Value: !Ref CheckUserAccessKey
@@ -45,9 +46,9 @@ Resources:
       DataType: text
       Description: !Sub Secret Key for ${CheckMkUser}
       Name: !Sub ${CheckMkUser}-secret-key
-      # Tags:
-      #   - Key: created-by
-      #     Value: Jeff Pabian
+      Tags:
+        created-by: Jeff Pabian
+        StackName: !Sub ${AWS::StackName}
       Tier: Standard
       Type: String
       Value: Fn:GetAtt CheckMkUser.SecretAccessKey
@@ -122,3 +123,6 @@ Outputs:
   UsernameArn:
     Description: The ARN for the check_mk IAM username`
     Value: !GetAtt CheckMkUser.Arn
+  AccesKey:
+    Description: The Access Key we'll be using. Secret is stored in param store
+    Value: !Ref CheckUserAccessKey
