@@ -23,7 +23,7 @@ Resources:
   CheckUserAccessKey:
     Type: AWS::IAM::AccessKey
     Properties:
-      Serial: 1
+      Serial: 2
       Status: "Active"
       UserName: !Ref CheckMkUser 
 
@@ -51,7 +51,7 @@ Resources:
         StackName: !Sub ${AWS::StackName}
       Tier: Standard
       Type: String
-      Value: Fn:GetAtt CheckMkUser.SecretAccessKey
+      Value: !GetAtt CheckUserAccessKey.SecretAccessKey
 
   CheckMkRole:
     Type: AWS::IAM::Role
