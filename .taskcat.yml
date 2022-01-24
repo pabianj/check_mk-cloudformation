@@ -1,0 +1,12 @@
+general:
+  parameters:
+    s3_bucket: taskcat-dsfo88
+project:
+  name: check-mk-template
+  s3_bucket: taskcat-dsfo88
+  regions:
+    - us-east-1
+tests: 
+  default:
+    s3_bucket: taskcat-dsfo88
+    template: ./template.yaml

@@ -10,6 +10,10 @@ This template creates the following:
 - Appropriate IAM Policy for the role
 - API Access Key and Secret stored in param store
 
+
+# taskcat
+We're using `taskcat` to do testing and linting. See the file `.taskcat.yaml` for more info.  Use your own s3 bucket
+
 # Helpful links:
 
 - https://docs.checkmk.com/latest/en/monitoring_aws.html

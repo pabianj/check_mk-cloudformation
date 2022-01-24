@@ -1,5 +1,4 @@
 AWSTemplateFormatVersion: '2010-09-09'
-
 Description: IAM User, Role, and Policy for check_mk. Access Key and Secret will be stored in Param Store
 
 Parameters:
@@ -13,4 +12,113 @@ Parameters:
     Default: check_mk-Role
 
 Resources:
-  
+  CheckMkUser:
+    Type: AWS::IAM::User
+    Properties:
+      Tags:
+        - Key: created-by
+          Value: Jeff Pabian
+      UserName: !Sub ${userName}-${AWS::Region}
+
+  CheckUserAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      Serial: 1
+      Status: "Active"
+      UserName: !Ref CheckMkUser 
+
+  CheckUserKey:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      DataType: text
+      Description: !Sub Access Key for ${CheckMkUser}
+      Name: !Sub ${CheckMkUser}-access-key
+      # Tags:
+      #   - created-by: Jeff Pabian
+      Tier: Standard
+      Type: String
+      Value: !Ref CheckUserAccessKey
+
+  CheckUserSecret:
+    Type: AWS::SSM::Parameter
+    Properties: 
+      DataType: text
+      Description: !Sub Secret Key for ${CheckMkUser}
+      Name: !Sub ${CheckMkUser}-secret-key
+      # Tags:
+      #   - Key: created-by
+      #     Value: Jeff Pabian
+      Tier: Standard
+      Type: String
+      Value: Fn:GetAtt CheckMkUser.SecretAccessKey
+
+  CheckMkRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Description: "Allows the check_mk_user to do its thing"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/ReadOnlyAccess  
+      MaxSessionDuration: 3600
+      RoleName: !Sub ${iamRole}-${AWS::Region}
+      Tags:
+        - Key: created-by
+          Value: Jeff Pabian
+
+  BillingViewAccess:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: "check_mk_BillingViewAccess" 
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "BillingViewCheckMk"
+            Effect:  Allow
+            Action:
+              - "aws-portal:ViewPaymentMethods"
+              - "aws-portal:ViewUsage"
+              - "ce:GetCostAndUsage"
+              - "ce:GetPreferences"
+              - "ce:GetReservationPurchaseRecommendation"
+              - "ce:GetReservationUtilization"
+              - "ce:GetCostCategories"
+              - "ce:GetSavingsPlansPurchaseRecommendation"
+              - "ce:GetDimensionValues"
+              - "ce:GetSavingsPlansUtilizationDetails"
+              - "ce:GetAnomalySubscriptions"
+              - "aws-portal:ViewBilling"
+              - "ce:DescribeReport"
+              - "ce:GetReservationCoverage"
+              - "ce:GetAnomalyMonitors"
+              - "ce:DescribeNotificationSubscription"
+              - "ce:GetUsageForecast"
+              - "ce:DescribeCostCategoryDefinition"
+              - "ce:GetRightsizingRecommendation"
+              - "aws-portal:ViewAccount"
+              - "ce:GetSavingsPlansUtilization"
+              - "ce:GetAnomalies"
+              - "ce:GetCostForecast"
+              - "ce:GetCostAndUsageWithResources"
+              - "ce:GetSavingsPlansCoverage"
+              - "ce:GetTags"
+            Resource: "*"
+      Roles:
+        - !Ref CheckMkRole
+
+
+
+Outputs:
+  Username:
+    Description: The check_mk IAM username
+    Value: !Ref CheckMkUser
+  UsernameArn:
+    Description: The ARN for the check_mk IAM username`
+    Value: !GetAtt CheckMkUser.Arn
